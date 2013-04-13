@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.support.v4.app.Fragment;
+
 public class SplatContent {
 
     /**
@@ -19,10 +21,10 @@ public class SplatContent {
 
     static {
         // Add 3 sample items.
-        addItem(new MenuItem("map", "Roadkill Map"));
-        addItem(new MenuItem("2", "Map a Splat"));
-        addItem(new MenuItem("3", "Top 10 Splats"));
-        addItem(new MenuItem("4", "Browse All Splats"));
+        addItem(new MenuItem("map", "Roadkill Map", new RoadkillFragment()));
+        addItem(new MenuItem("2", "Map a Splat", new SplatDetailFragment("Map a Splat")));
+        addItem(new MenuItem("3", "Top 10 Splats", new SplatDetailFragment("Top 10 Splats")));
+        addItem(new MenuItem("4", "Browse All Splats", new SplatDetailFragment("Browse")));
     }
 
     private static void addItem(MenuItem item) {
@@ -30,16 +32,15 @@ public class SplatContent {
         ITEM_MAP.put(item.id, item);
     }
 
-    /**
-     * A dummy item representing a piece of content.
-     */
     public static class MenuItem {
-        public String id;
-        public String content;
+        public final String id;
+        public final String content;
+        public final Fragment fragment;
 
-        public MenuItem(String id, String content) {
+        public MenuItem(String id, String content, Fragment frag) {
             this.id = id;
             this.content = content;
+            this.fragment = frag;
         }
 
         @Override

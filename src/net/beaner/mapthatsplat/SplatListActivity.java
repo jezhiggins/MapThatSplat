@@ -61,16 +61,9 @@ public class SplatListActivity extends FragmentActivity
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(SplatDetailFragment.ARG_ITEM_ID, id);
+            SplatContent.MenuItem content = SplatContent.ITEM_MAP.get(id);
+            Fragment fragment = content.fragment;
             
-            Fragment fragment;
-            if(id.equals("map"))
-            	fragment = new RoadkillFragment();
-            else 
-            	fragment = new SplatDetailFragment();
-            
-            fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.splat_detail_container, fragment)
                     .commit();
@@ -79,7 +72,7 @@ public class SplatListActivity extends FragmentActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, SplatDetailActivity.class);
-            detailIntent.putExtra(SplatDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(SplatDetailActivity.ARG_ITEM_ID, id);
             startActivity(detailIntent);
         }
     }
