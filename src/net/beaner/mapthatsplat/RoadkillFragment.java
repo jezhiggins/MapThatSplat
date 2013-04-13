@@ -1,6 +1,7 @@
 package net.beaner.mapthatsplat;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import android.os.Bundle;
@@ -20,6 +21,11 @@ public class RoadkillFragment extends Fragment {
         map_.setTileSource(TileSourceFactory.MAPNIK);
         map_.setBuiltInZoomControls(true);
         map_.setMultiTouchControls(true);
+        map_.getController().setZoom(14);
+        
+        final GeoPoint centre = new GeoPoint(51477841, 0); // Greenwich Observatory
+        map_.getController().setCenter(centre);  
+   
       
         return rootView;
     }

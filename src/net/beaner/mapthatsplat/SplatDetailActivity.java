@@ -2,6 +2,7 @@ package net.beaner.mapthatsplat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
@@ -16,7 +17,8 @@ import android.view.MenuItem;
  * more than a {@link SplatDetailFragment}.
  */
 public class SplatDetailActivity extends FragmentActivity {
-
+    static public String ARG_ITEM_ID = "item_id"; 
+  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,13 +37,11 @@ public class SplatDetailActivity extends FragmentActivity {
         // http://developer.android.com/guide/components/fragments.html
         //
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(SplatDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(SplatDetailFragment.ARG_ITEM_ID));
-            SplatDetailFragment fragment = new SplatDetailFragment();
-            fragment.setArguments(arguments);
+            final String contentId = getIntent().getStringExtra(ARG_ITEM_ID);
+            final SplatContent.MenuItem content = SplatContent.ITEM_MAP.get(contentId);
+
+            final Fragment fragment = content.fragment;
+
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.splat_detail_container, fragment)
                     .commit();
