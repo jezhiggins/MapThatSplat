@@ -19,7 +19,7 @@ public class SplatContent {
 
     static {
         // Add 3 sample items.
-        addItem(new MenuItem("1", "Roadkill Map"));
+        addItem(new MenuItem("map", "Roadkill Map"));
         addItem(new MenuItem("2", "Map a Splat"));
         addItem(new MenuItem("3", "Top 10 Splats"));
         addItem(new MenuItem("4", "Browse All Splats"));

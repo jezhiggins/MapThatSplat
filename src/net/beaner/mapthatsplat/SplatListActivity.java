@@ -2,6 +2,7 @@ package net.beaner.mapthatsplat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 
@@ -62,7 +63,13 @@ public class SplatListActivity extends FragmentActivity
             // fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putString(SplatDetailFragment.ARG_ITEM_ID, id);
-            SplatDetailFragment fragment = new SplatDetailFragment();
+            
+            Fragment fragment;
+            if(id.equals("map"))
+            	fragment = new RoadkillFragment();
+            else 
+            	fragment = new SplatDetailFragment();
+            
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.splat_detail_container, fragment)
