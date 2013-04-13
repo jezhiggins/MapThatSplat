@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class RoadkillFragment extends Fragment {
 	private MapView map_;
@@ -21,8 +20,7 @@ public class RoadkillFragment extends Fragment {
         map_.setTileSource(TileSourceFactory.MAPNIK);
         map_.setBuiltInZoomControls(true);
         map_.setMultiTouchControls(true);
-        map_.
-        
+      
         return rootView;
     }
 
