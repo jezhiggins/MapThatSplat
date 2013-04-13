@@ -1,4 +1,4 @@
-package net.beaner.mapthatsplat.dummy;
+package net.beaner.mapthatsplat;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import net.beaner.mapthatsplat.dummy.SplatContent;
 
 /**
  * A list fragment representing a list of Splats. This fragment

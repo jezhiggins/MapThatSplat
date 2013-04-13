@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import net.beaner.mapthatsplat.dummy.SplatContent;
 
 /**
  * A fragment representing a single Splat detail screen.
