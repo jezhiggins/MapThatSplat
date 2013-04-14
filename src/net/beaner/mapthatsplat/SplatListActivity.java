@@ -61,7 +61,7 @@ public class SplatListActivity extends FragmentActivity
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            SplatContent.MenuItem content = SplatContent.ITEM_MAP.get(id);
+            SplatMenu.MenuItem content = SplatMenu.ITEM_MAP.get(id);
             Fragment fragment = content.fragment;
             
             getSupportFragmentManager().beginTransaction()

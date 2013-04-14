@@ -7,7 +7,7 @@ import java.util.Map;
 
 import android.support.v4.app.Fragment;
 
-public class SplatContent {
+public class SplatMenu {
 
     /**
      * An array of sample (dummy) items.
@@ -34,18 +34,18 @@ public class SplatContent {
 
     public static class MenuItem {
         public final String id;
-        public final String content;
+        public final String title;
         public final Fragment fragment;
 
         public MenuItem(String id, String content, Fragment frag) {
             this.id = id;
-            this.content = content;
+            this.title = content;
             this.fragment = frag;
         }
 
         @Override
         public String toString() {
-            return content;
+            return title;
         }
     }
 }

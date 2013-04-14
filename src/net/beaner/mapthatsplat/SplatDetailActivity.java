@@ -38,7 +38,7 @@ public class SplatDetailActivity extends FragmentActivity {
         //
         if (savedInstanceState == null) {
             final String contentId = getIntent().getStringExtra(ARG_ITEM_ID);
-            final SplatContent.MenuItem content = SplatContent.ITEM_MAP.get(contentId);
+            final SplatMenu.MenuItem content = SplatMenu.ITEM_MAP.get(contentId);
 
             final Fragment fragment = content.fragment;
 
