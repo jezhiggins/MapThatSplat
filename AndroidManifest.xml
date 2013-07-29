@@ -30,8 +30,7 @@
         </activity>
         <activity
             android:name="net.beaner.mapthatsplat.SplatDetailActivity"
-            android:label="@string/title_splat_detail"
-            android:parentActivityName=".SplatListActivity" >
+            android:label="@string/title_splat_detail">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SplatListActivity" />
