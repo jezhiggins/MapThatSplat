@@ -4,6 +4,7 @@ import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MyLocationOverlay;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,10 +12,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-public class RoadkillFragment extends Fragment {
+public class RoadkillFragment extends Fragment implements OnClickListener {
 	private MapView map_;
+	private MyLocationOverlay location_;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, 
@@ -25,7 +29,15 @@ public class RoadkillFragment extends Fragment {
         map_ = (MapView)rootView.findViewById(R.id.mapview);
         map_.setTileSource(TileSourceFactory.MAPNIK);
         map_.setBuiltInZoomControls(true);
-        map_.setMultiTouchControls(true);      
+        map_.setMultiTouchControls(true);     
+        
+        location_ = new MyLocationOverlay(getActivity(), map_);
+        location_.enableMyLocation();
+        map_.getOverlays().add(location_);
+
+        final Button findMe = (Button)rootView.findViewById(R.id.findme_btn);
+        findMe.setOnClickListener(this);
+        
         return rootView;
     }
 
@@ -40,7 +52,9 @@ public class RoadkillFragment extends Fragment {
 	    int lat = centre.getLatitudeE6();
 	    edit.putInt("lon", lon);
 	    edit.putInt("lat", lat);
-	    edit.putInt("zoom", map_.getZoomLevel());	
+	    edit.putInt("zoom", map_.getZoomLevel());
+	    
+	    edit.putBoolean("follow", location_.isFollowLocationEnabled());
 	    
 	    edit.commit();
 	}
@@ -59,6 +73,11 @@ public class RoadkillFragment extends Fragment {
 		map_.getController().setCenter(centre);
 		map_.getController().setZoom(zoom);
 		
+		final boolean follow = prefs.getBoolean("follow", true);
+		if(follow)
+			location_.enableFollowLocation();
+		else
+			location_.disableFollowLocation();
 	}
     
 	
@@ -66,5 +85,10 @@ public class RoadkillFragment extends Fragment {
     private SharedPreferences prefs() {
     	return getActivity().getSharedPreferences("roadkillmap", Context.MODE_PRIVATE);
     }
+
+	@Override
+	public void onClick(View v) {
+		location_.enableFollowLocation();
+	}
 
 }

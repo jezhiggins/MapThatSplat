@@ -3,20 +3,29 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-  <TextView 
-    android:id="@+id/roadkill_map"
-    style="?android:attr/textAppearanceLarge"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:textIsSelectable="true"
-    android:text="Map is here!"
-    tools:context=".SplatDetailFragment" />
-  <org.osmdroid.views.MapView
-    android:id="@+id/mapview"
-    android:layout_width="match_parent" 
-    android:layout_height="fill_parent"
-    android:enabled="true"
-    android:clickable="true"/>
-    
+
+    <TextView
+        android:id="@+id/roadkill_map"
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="This is the roadkill map, it shows density of roadkill in particular areas and your current location."
+        android:textIsSelectable="true"
+        tools:context=".SplatDetailFragment" />
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapview"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="0.5"
+        android:clickable="true"
+        android:enabled="true" />
+
+    <Button
+        android:id="@+id/findme_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Find me!" />
+
 </LinearLayout>

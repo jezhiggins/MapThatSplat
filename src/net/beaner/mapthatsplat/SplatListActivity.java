@@ -48,6 +48,8 @@ public class SplatListActivity extends FragmentActivity
             ((SplatListFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.splat_list))
                     .setActivateOnItemClick(true);
+            
+            onItemSelected("map");
         }
     }
 
