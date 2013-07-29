@@ -22,7 +22,7 @@ public class SplatMenu {
     static {
         // Add 3 sample items.
         addItem(new MenuItem("map", "Roadkill Map", new RoadkillFragment()));
-        addItem(new MenuItem("2", "Map a Splat", new SplatDetailFragment("Map a Splat")));
+        addItem(new MenuItem("2", "Add a Splat", new AddSplatFragment()));
         addItem(new MenuItem("3", "Top 10 Splats", new SplatDetailFragment("Top 10 Splats")));
         addItem(new MenuItem("4", "Browse All Splats", new SplatDetailFragment("Browse")));
     }
