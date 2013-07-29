@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="This is the roadkill map, it shows density of roadkill in particular areas and your current location."
+        android:text="This is the roadkill map, it shows density of roadkill in particular areas and your current location. Use the buttons on the map to zoom in/out."
         android:textIsSelectable="true"
         tools:context=".SplatDetailFragment" />
 
