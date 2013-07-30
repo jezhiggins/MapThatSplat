@@ -41,10 +41,10 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
         backBtn_ = setupButton(rootView, R.id.back);
         nextBtn_ = setupButton(rootView, R.id.next);
         
-    	Spinner spinner = (Spinner)rootView.findViewById(R.id.animal_choose);
-    	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
-    	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    	spinner.setAdapter(adapter);
+    	  Spinner spinner = (Spinner)rootView.findViewById(R.id.animal_choice);
+    	  ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
+    	  adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+    	  spinner.setAdapter(adapter);
 
         showPage(first_);
         
