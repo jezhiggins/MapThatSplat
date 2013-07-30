@@ -62,14 +62,14 @@
 	      android:layout_height="match_parent"
 	      android:orientation="vertical">
 	    <TextView
-	        android:text="what Animal?"
+	        android:text="What Animal?"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:padding="16dp"
 	        style="?android:attr/textAppearanceLarge"/>
 	    <Spinner
 	        android:id="@+id/animal_choice"
-	        android:layout_width="fill_parent"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content" />
 
 	    </LinearLayout>
@@ -77,12 +77,6 @@
 	      android:id="@+id/upload"  
 	      android:layout_width="match_parent"
 	      android:layout_height="match_parent">
-
-	        <Spinner
-	            android:id="@+id/animal_choose"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1" />
 
 	    <TextView
 	        android:text="Upload!"

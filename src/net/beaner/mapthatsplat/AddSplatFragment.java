@@ -24,6 +24,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 	private View third_;
 	private View upload_;
 	private MapView map_;
+	private MyLocationOverlay location_;
 	private Button backBtn_;
 	private Button nextBtn_;
 
@@ -41,10 +42,10 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
         backBtn_ = setupButton(rootView, R.id.back);
         nextBtn_ = setupButton(rootView, R.id.next);
         
-    	Spinner spinner = (Spinner)rootView.findViewById(R.id.animal_choose);
-    	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
-    	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    	spinner.setAdapter(adapter);
+    	  Spinner spinner = (Spinner)rootView.findViewById(R.id.animal_choice);
+    	  ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
+    	  adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+    	  spinner.setAdapter(adapter);
 
         showPage(first_);
         
@@ -65,16 +66,16 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
         map_.setBuiltInZoomControls(true);
         map_.setMultiTouchControls(true);  
         
-        final MyLocationOverlay location = new MyLocationOverlay(getActivity(), map_);
-        location.enableMyLocation();
-        map_.getOverlays().add(location);
+        location_ = new MyLocationOverlay(getActivity(), map_);
+        location_.enableMyLocation();
+        map_.getOverlays().add(location_);
     }
     
     @Override
 	public void onPause() {
-		super.onPause();
+		  super.onPause();
 		
-		final SharedPreferences.Editor edit = prefs().edit();
+  		final SharedPreferences.Editor edit = prefs().edit();
 		
 	    final IGeoPoint centre = map_.getMapCenter();
 	    int lon = centre.getLongitudeE6();
@@ -84,6 +85,8 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 	    edit.putInt("zoom", map_.getZoomLevel());
 	    
 	    edit.commit();
+	    
+	    location_.disableMyLocation();
 	}
 
 	@Override
@@ -99,6 +102,8 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 		final GeoPoint centre = new GeoPoint(lat, lon);
 		map_.getController().setCenter(centre);
 		map_.getController().setZoom(zoom);
+
+		location_.enableMyLocation();
 	}
  
     private SharedPreferences prefs() {
