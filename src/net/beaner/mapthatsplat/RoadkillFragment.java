@@ -57,6 +57,8 @@ public class RoadkillFragment extends Fragment implements OnClickListener {
 	    edit.putBoolean("follow", location_.isFollowLocationEnabled());
 	    
 	    edit.commit();
+	    
+	    location_.disableMyLocation();
 	}
 
 	@Override
@@ -72,7 +74,8 @@ public class RoadkillFragment extends Fragment implements OnClickListener {
 		final GeoPoint centre = new GeoPoint(lat, lon);
 		map_.getController().setCenter(centre);
 		map_.getController().setZoom(zoom);
-		
+
+		location_.enableMyLocation();
 		final boolean follow = prefs.getBoolean("follow", true);
 		if(follow)
 			location_.enableFollowLocation();
