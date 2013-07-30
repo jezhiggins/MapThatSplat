@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/top"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="vertical" >
    <FrameLayout
@@ -17,8 +17,8 @@
 	        android:text="Where was the splat?"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:padding="16dp"
-	        style="?android:attr/textAppearanceLarge"/>
+	        android:padding="16dp"/>
+
 	      <org.osmdroid.views.MapView
 	        android:id="@+id/mapview"
 	        android:layout_width="match_parent"
@@ -27,16 +27,34 @@
 	        android:clickable="true"
 	        android:enabled="true" />   
 	  </LinearLayout>
-	  <LinearLayout 
+	  <LinearLayout
 	      android:id="@+id/second"  
 	      android:layout_width="match_parent"
-	      android:layout_height="match_parent">
+	      android:layout_height="match_parent"
+	      android:orientation="vertical"
+          android:padding="6dp"
+	      android:weightSum="2">
 	    <TextView
 	        android:text="Upload an Image!"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:padding="16dp"
 	        style="?android:attr/textAppearanceLarge"/>
+	    <Button
+        android:id="@+id/takephoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="Take a Photo"
+        android:textSize="25sp"/>
+	    <Button
+	        android:id="@+id/usephoto"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="10dp"
+	        android:text="Choose an Existing Photo"
+	        android:textSize="25sp" />
+
 	  </LinearLayout>
 	  <LinearLayout 
 	      android:id="@+id/third"  
@@ -53,6 +71,7 @@
 	        android:id="@+id/animal_choice"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content" />
+
 	    </LinearLayout>
 	    <LinearLayout 
 	      android:id="@+id/upload"  
@@ -60,7 +79,7 @@
 	      android:layout_height="match_parent">
 
 	        <Spinner
-	            android:id="@+id/spinner1"
+	            android:id="@+id/animal_choose"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1" />
@@ -76,7 +95,7 @@
   <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
-        android:gravity="right"
+        android:gravity="left"
         android:orientation="horizontal">    
     <Button
         android:id="@+id/back"
@@ -84,6 +103,10 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:text="Back" />
+    <View
+        android:layout_width="0.0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0"/>
       <Button
         android:id="@+id/next"
         android:layout_width="wrap_content"

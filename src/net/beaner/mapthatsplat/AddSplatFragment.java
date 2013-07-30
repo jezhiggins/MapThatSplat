@@ -14,7 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 public class AddSplatFragment extends Fragment implements OnClickListener {
 	private View first_;
@@ -24,7 +26,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 	private MapView map_;
 	private Button backBtn_;
 	private Button nextBtn_;
-	
+
     @Override
     public View onCreateView(LayoutInflater inflater, 
     						 ViewGroup container,
@@ -38,6 +40,11 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
         
         backBtn_ = setupButton(rootView, R.id.back);
         nextBtn_ = setupButton(rootView, R.id.next);
+        
+    	Spinner spinner = (Spinner)rootView.findViewById(R.id.animal_choose);
+    	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
+    	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    	spinner.setAdapter(adapter);
 
         showPage(first_);
         
@@ -128,6 +135,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 		}
 		else if(second_.getVisibility() == View.VISIBLE) {
 			showPage(third_);
+		    nextBtn_.setText("Upload!");
 		}
 		else{
 			showPage(upload_);
@@ -148,7 +156,22 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 		else{
 			backBtn_.setVisibility(View.VISIBLE);
 		}
+		
+		if(page == upload_) {
+			nextBtn_.setVisibility(View.INVISIBLE);
+		}
+		else {
+			nextBtn_.setVisibility(View.VISIBLE);	
+		}
+		
+		if(page == third_) {
+			nextBtn_.setText("Upload!");
+		}
+		else {
+			nextBtn_.setText("Next");
+		}
 	}
+
 }
 		
 
