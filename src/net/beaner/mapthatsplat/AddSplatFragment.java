@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 public class AddSplatFragment extends Fragment implements OnClickListener, OnItemSelectedListener {
@@ -31,6 +32,8 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	private Button backBtn_;
 	private Button nextBtn_;
 	private Button findMe_;
+	private EditText customAnimal_;
+	private Spinner spinner_;
 	private int lastSpinnerPosition_;
      
     @Override
@@ -48,14 +51,16 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
         backBtn_ = setupButton(rootView, R.id.back);
         nextBtn_ = setupButton(rootView, R.id.next);
         
-    	Spinner spinner = (Spinner)rootView.findViewById(R.id.animal_choice);
+    	spinner_ = (Spinner)rootView.findViewById(R.id.animal_choice);
     	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
     	adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-    	spinner.setAdapter(adapter);
-    	spinner.setOnItemSelectedListener(this);
+    	spinner_.setAdapter(adapter);
+    	spinner_.setOnItemSelectedListener(this);
     	lastSpinnerPosition_ = 0;
 
     	findMe_ = setupButton(rootView, R.id.findme_btn);
+    	
+    	customAnimal_ = (EditText)rootView.findViewById(R.id.customanimal);
     	  
         showPage(first_);
         
@@ -215,6 +220,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 		{
 			nextBtn_.setText("Next");
 			nextBtn_.setEnabled(true);
+			customAnimal_.setEnabled(false);
 		}
 	}
 	
@@ -223,9 +229,9 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 		// called by the spinner when the chosen animal changes
     	lastSpinnerPosition_ = position;
     	if(currentPage_ == third_) {
-    		nextBtn_.setEnabled(lastSpinnerPosition_ != 0);
+    		nextBtn_.setEnabled(lastSpinnerPosition_ != 0);    		
+    		customAnimal_.setEnabled(lastSpinnerPosition_ == spinner_.getCount()-1);
     	}
-    	//.adapter.getCount()
 	}
 
 
