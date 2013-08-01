@@ -67,6 +67,12 @@
 	        android:layout_height="wrap_content"
 	        android:padding="16dp"
 	        style="?android:attr/textAppearanceLarge"/>
+	    <EditText
+	            android:id="@+id/customanimal"
+	            android:inputType="textCapWords|textAutoCorrect"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:hint="enter_other_animal"/> 
 	    <Spinner
 	        android:id="@+id/animal_choice"
 	        android:layout_width="match_parent"

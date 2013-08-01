@@ -69,7 +69,6 @@ public class SplatListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
         setListAdapter(new ArrayAdapter<SplatMenu.MenuItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
