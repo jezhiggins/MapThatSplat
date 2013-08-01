@@ -27,7 +27,8 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 	private MyLocationOverlay location_;
 	private Button backBtn_;
 	private Button nextBtn_;
-
+	private Button findMe_;
+     
     @Override
     public View onCreateView(LayoutInflater inflater, 
     						 ViewGroup container,
@@ -47,12 +48,15 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
     	  adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
     	  spinner.setAdapter(adapter);
 
+    	findMe_ = setupButton(rootView, R.id.findme_btn);
+    	  
         showPage(first_);
         
         setupMap(rootView);
   
         return rootView;
     }
+    
     
     private Button setupButton(View rootView, int buttonId) {
         final Button btn = (Button)rootView.findViewById(buttonId);
@@ -110,7 +114,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
     	return getActivity().getSharedPreferences("roadkillmap", Context.MODE_PRIVATE);
     }
 
-    // when someone clicks next, this method is called
+    // when someone clicks a button, this method is called
 	@Override
 	public void onClick(View buttonThatWasClicked) {
 		switch(buttonThatWasClicked.getId()) {
@@ -119,6 +123,9 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 			break;
 		case R.id.next:
 			goNext();
+			break;
+		case R.id.findme_btn:
+			findme();
 			break;
 		}
 	}
@@ -175,6 +182,10 @@ public class AddSplatFragment extends Fragment implements OnClickListener {
 		else {
 			nextBtn_.setText("Next");
 		}
+	}
+	
+	private void findme() {
+		location_.enableFollowLocation();
 	}
 
 }
