@@ -81,9 +81,7 @@ public class RoadkillFragment extends Fragment implements OnClickListener {
 			location_.enableFollowLocation();
 		else
 			location_.disableFollowLocation();
-	}
-    
-	
+	} 	
 	
     private SharedPreferences prefs() {
     	return getActivity().getSharedPreferences("roadkillmap", Context.MODE_PRIVATE);

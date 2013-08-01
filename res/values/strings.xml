@@ -5,6 +5,7 @@
     <string name="title_splat_detail">Splat Detail</string>
 
     <string-array name="animal_array">
+           <item>Please Choose...</item>
            <item>Badger</item>
            <item>Cat</item>
            <item>Deer</item>
@@ -14,6 +15,7 @@
            <item>Raccoon</item>
            <item>Rat</item>
            <item>Squirrel</item>
+           <item>Other...</item>
      </string-array>
     
 </resources>
