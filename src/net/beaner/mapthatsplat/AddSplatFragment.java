@@ -1,14 +1,23 @@
 package net.beaner.mapthatsplat;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MyLocationOverlay;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +28,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 public class AddSplatFragment extends Fragment implements OnClickListener, OnItemSelectedListener {
@@ -35,6 +45,12 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	private EditText customAnimal_;
 	private Spinner spinner_;
 	private int lastSpinnerPosition_;
+	private String photoFile_ = null;
+    private Bitmap photo_ = null;
+    private ImageView photoView_;
+	
+	private final static int TAKE_PHOTO_ID = 1;
+	private final static int CHOOSE_PHOTO_ID = 2;
      
     @Override
     public View onCreateView(LayoutInflater inflater, 
@@ -60,7 +76,11 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 
     	findMe_ = setupButton(rootView, R.id.findme_btn);
     	
+    	setupButton(rootView, R.id.takephoto);
+    	setupButton(rootView, R.id.usephoto);
+    	
     	customAnimal_ = (EditText)rootView.findViewById(R.id.customanimal);
+    	photoView_ = (ImageView)rootView.findViewById(R.id.splatograph);
     	  
         showPage(first_);
         
@@ -144,6 +164,12 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 		case R.id.findme_btn:
 			findme();
 			break;
+		case R.id.takephoto:
+			takePhoto();
+			break;
+		case R.id.usephoto:
+			choosePhoto();
+			break;
 		}
 	}
 	
@@ -171,7 +197,74 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	private void findme() {
 		location_.enableFollowLocation();
 	}
+	
+	private void takePhoto() {
+		// ask Android to take a photo and then tell us about it
+		try {
+			File tempFile = File.createTempFile("splat", ".jpg");
+			Uri uri = Uri.fromFile(tempFile);
+			Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+			startActivityForResult(photoIntent, TAKE_PHOTO_ID);
+		} catch (IOException e) {
+			// Bums!
+			e.printStackTrace();
+		}
+	}
+	
+	private void choosePhoto() {
+	    Intent choose = new Intent(Intent.ACTION_PICK,
+                 android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+	    startActivityForResult(choose, CHOOSE_PHOTO_ID);
+	}
 
+	@Override
+	public void onActivityResult(int requestCode,
+			                     int resultCode,
+			                     Intent data) {
+		if (resultCode != Activity.RESULT_OK)
+	      return;
+
+		try
+	    {
+	      photoFile_ = getImageFilePath(data);
+	      if(photo_ != null)
+	        photo_.recycle();
+	      photo_ = Bitmaps.loadFile(photoFile_);
+  		  splatPhoto();
+	    }
+		catch(Exception e)
+		{
+			//Toast.makeText(getActivity(), "There was a problem grabbing the photo : " + e.getMessage(), Toast.LENGTH_LONG).show();
+		    //if(requestCode == ActivityId.TakePhoto)
+		    //    startActivityForResult(new Intent(Intent.ACTION_PICK,
+		    //                                      android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+		    //                           ActivityId.ChoosePhoto);
+		}
+	}
+	
+	private void splatPhoto() {
+		photoView_.setImageBitmap(photo_);
+	}
+	
+	private String getImageFilePath(final Intent data)
+    {
+	    final Uri selectedImage = data.getData();
+	    final String[] filePathColumn = { android.provider.MediaStore.Images.Media.DATA };
+
+	    final Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+	    try
+	    {
+	      cursor.moveToFirst();
+	      return cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
+	    } // try
+	    finally
+	    {
+	      cursor.close();
+	    } // finally
+	  } // getImageFilePath
+
+	
 	private void showPage(View page) {
 		// this is our method that we use to show the page 
 		// of our layout that we want to see
@@ -237,7 +330,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
-		// TODO Auto-generated method stub		
+		// we're not interested in this
 	}
 }
 		
