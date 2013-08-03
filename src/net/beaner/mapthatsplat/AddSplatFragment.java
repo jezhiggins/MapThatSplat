@@ -2,6 +2,8 @@ package net.beaner.mapthatsplat;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -10,6 +12,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MyLocationOverlay;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +20,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -30,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class AddSplatFragment extends Fragment implements OnClickListener, OnItemSelectedListener {
 	private View first_;
@@ -47,6 +52,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	private int lastSpinnerPosition_;
 	private String photoFile_ = null;
     private Bitmap photo_ = null;
+    private Uri photoUri_;
     private ImageView photoView_;
 	
 	private final static int TAKE_PHOTO_ID = 1;
@@ -201,10 +207,12 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	private void takePhoto() {
 		// ask Android to take a photo and then tell us about it
 		try {
-			File tempFile = File.createTempFile("splat", ".jpg");
-			Uri uri = Uri.fromFile(tempFile);
-			Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+      ContentValues values = new ContentValues();
+      values.put(MediaStore.Images.Media.TITLE, createPhotographFile());
+      Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			photoUri_ = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+			photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri_);
+			photoIntent.putExtra("return-data", true);
 			startActivityForResult(photoIntent, TAKE_PHOTO_ID);
 		} catch (IOException e) {
 			// Bums!
@@ -212,9 +220,14 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 		}
 	}
 	
+	private String createPhotographFile() throws IOException {
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    String imageFileName = "splat-" + timeStamp;
+    return imageFileName;
+	}
+	
 	private void choosePhoto() {
-	    Intent choose = new Intent(Intent.ACTION_PICK,
-                 android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+	    Intent choose = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
 	    startActivityForResult(choose, CHOOSE_PHOTO_ID);
 	}
 
@@ -235,11 +248,9 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	    }
 		catch(Exception e)
 		{
-			//Toast.makeText(getActivity(), "There was a problem grabbing the photo : " + e.getMessage(), Toast.LENGTH_LONG).show();
-		    //if(requestCode == ActivityId.TakePhoto)
-		    //    startActivityForResult(new Intent(Intent.ACTION_PICK,
-		    //                                      android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
-		    //                           ActivityId.ChoosePhoto);
+			Toast.makeText(getActivity(), "There was a problem grabbing the photo : " + e.getMessage(), Toast.LENGTH_LONG).show();
+		  if(requestCode == TAKE_PHOTO_ID)
+		    choosePhoto();
 		}
 	}
 	
@@ -249,8 +260,8 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	
 	private String getImageFilePath(final Intent data)
     {
-	    final Uri selectedImage = data.getData();
-	    final String[] filePathColumn = { android.provider.MediaStore.Images.Media.DATA };
+	    final Uri selectedImage = (data != null) ? data.getData() : photoUri_;
+	    final String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
 	    final Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
 	    try
