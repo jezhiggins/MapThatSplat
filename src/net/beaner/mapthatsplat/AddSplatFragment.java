@@ -18,7 +18,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -36,7 +38,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class AddSplatFragment extends Fragment implements OnClickListener, OnItemSelectedListener {
+public class AddSplatFragment extends Fragment 
+		implements OnClickListener, OnItemSelectedListener, UploadListener {
 	private View first_;
 	private View second_;
 	private View third_;
@@ -197,6 +200,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 		}
 		else{
 			showPage(upload_);
+			uploadToWebsite();
 		}
 	}
 	
@@ -309,10 +313,33 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
     	}
 	}
 
+	private String getAnimal() {
+		if(lastSpinnerPosition_ == spinner_.getCount()-1)
+			return customAnimal_.getText().toString();
+		return (String)spinner_.getAdapter().getItem(lastSpinnerPosition_);
+	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 		// we're not interested in this
+	}
+	
+	private void uploadToWebsite() {
+		Location loc = location_.getLastFix();
+		UploadPhotoTask uploader = new UploadPhotoTask(this,
+													   loc,
+													   getAnimal(),
+													   photoFile_);
+		uploader.execute();
+	}	
+	
+	public void uploadComplete() {
+		Toast.makeText(getActivity(), "Thanks dude", Toast.LENGTH_LONG).show();
+	}
+	
+	public void uploadFailed() {
+		Toast.makeText(getActivity(), "There was a problem.  Bum!", Toast.LENGTH_LONG).show();
+		
 	}
 }
 		
