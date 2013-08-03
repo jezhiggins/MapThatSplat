@@ -207,25 +207,14 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	private void takePhoto() {
 		// ask Android to take a photo and then tell us about it
 		try {
-      ContentValues values = new ContentValues();
-      values.put(MediaStore.Images.Media.TITLE, createPhotographFile());
-      Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			photoUri_ = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-			photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri_);
-			photoIntent.putExtra("return-data", true);
+			Intent photoIntent = Photos.PhotoIntent(getActivity());
 			startActivityForResult(photoIntent, TAKE_PHOTO_ID);
 		} catch (IOException e) {
 			// Bums!
 			e.printStackTrace();
 		}
 	}
-	
-	private String createPhotographFile() throws IOException {
-    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-    String imageFileName = "splat-" + timeStamp;
-    return imageFileName;
-	}
-	
+		
 	private void choosePhoto() {
 	    Intent choose = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
 	    startActivityForResult(choose, CHOOSE_PHOTO_ID);
@@ -240,7 +229,7 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 
 		try
 	    {
-	      photoFile_ = getImageFilePath(data);
+	      photoFile_ = Photos.getImageFilePath(getActivity(), data);
 	      if(photo_ != null)
 	        photo_.recycle();
 	      photo_ = Bitmaps.loadFile(photoFile_);
@@ -257,24 +246,6 @@ public class AddSplatFragment extends Fragment implements OnClickListener, OnIte
 	private void splatPhoto() {
 		photoView_.setImageBitmap(photo_);
 	}
-	
-	private String getImageFilePath(final Intent data)
-    {
-	    final Uri selectedImage = (data != null) ? data.getData() : photoUri_;
-	    final String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-	    final Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-	    try
-	    {
-	      cursor.moveToFirst();
-	      return cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
-	    } // try
-	    finally
-	    {
-	      cursor.close();
-	    } // finally
-	  } // getImageFilePath
-
 	
 	private void showPage(View page) {
 		// this is our method that we use to show the page 
