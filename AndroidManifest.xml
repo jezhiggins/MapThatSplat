@@ -37,5 +37,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SplatListActivity" />
         </activity>
-    </application>
+        <activity
+            android:name="net.beaner.mapthatsplat.DisplayPhotoActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SplatListActivity" />
+        </activity>
+        </application>
 </manifest>

@@ -18,10 +18,12 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -30,12 +32,16 @@ public class SplatOverlay extends ItemizedIconOverlay<SplatOverlay.SplatItem>
 {
   
   public static class SplatItem extends OverlayItem {
-
+    private final String url_;
+    
     public SplatItem(final String title, 
-                     final String description, 
+                     final String url, 
                      final GeoPoint position) {
-      super(title, description, position);
+      super(title, "", position);
+      url_ = url;
     }
+    
+    public String getUrl() { return url_; }
   } // class SplatItem
   
   private final MapView mapView_;
@@ -58,7 +64,11 @@ public class SplatOverlay extends ItemizedIconOverlay<SplatOverlay.SplatItem>
     @Override
     public boolean onItemLongPress(int index, SplatItem splat)
     {
-      return false;
+      final Intent intent = new Intent(context_, DisplayPhotoActivity.class);
+      intent.putExtra("caption", splat.getTitle());
+      intent.putExtra("url", splat.getUrl());
+      context_.startActivity(intent);
+      return true;
     }
 
     @Override
@@ -205,7 +215,7 @@ public class SplatOverlay extends ItemizedIconOverlay<SplatOverlay.SplatItem>
                                                  splat.getDouble("lon"));
           
           final SplatItem newSplat = new SplatItem(splat.getString("name"),
-                                                   "",
+                                                   splat.getString("img"),
                                                    position);
           
           splats.add(newSplat);

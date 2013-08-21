@@ -32,6 +32,10 @@ public class Website {
 	static private String WEBSITE = "www.jezuk.co.uk";
 	static private String PREFIX = "mapThatSplat/";
 	
+	static public String baseUrl() {
+	  return "http://" + WEBSITE + "/" + PREFIX;
+	}
+	
 	static JSONArray fetchSplatData() throws Exception {
     final String json = fetchString("splats.php");
     return new JSONArray(json);
