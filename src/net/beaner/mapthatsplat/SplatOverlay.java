@@ -3,55 +3,197 @@ package net.beaner.mapthatsplat;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
+import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 
 public class SplatOverlay extends ItemizedOverlay<SplatOverlay.SplatItem>
                           implements MapListener
 {
+  
   public static class SplatItem extends OverlayItem {
 
     public SplatItem(final String title, 
                      final String description, 
-                     final GeoPoint position,
-                     final Drawable marker) {
+                     final GeoPoint position) {
       super(title, description, position);
-      setMarker(marker);
+      setMarker(SPLAT_MARKER);
     }
   } // class SplatItem
   
-  static private List<SplatItem> dummySplats(final Context context) {
-    final Drawable marker = context.getResources().getDrawable(R.drawable.ic_launcher);
-    final List<SplatItem> splats = new ArrayList<SplatItem>();
-    splats.add(new SplatItem("I am a dummy",
-                             "Woo!",
-                             new GeoPoint(52.445705116864026, -1.8787561572292157),
-                             marker));
-    splats.add(new SplatItem("Pantaloons",
-        "Woo!",
-        new GeoPoint(52.0088426, -4.9146281),
-        marker));
-    return splats;
-  }
+  private MapView mapView_;
+  private int zoomLevel_;
+  private boolean loading_;
+  private final int offset_;
+  private final float radius_;
+  private final Paint textBrush_;
+  static private final String LOADING = "Loading ...";
+  static private Drawable SPLAT_MARKER;
 
   public SplatOverlay(final Context context, final MapView mapView) {
-    super(context, mapView, dummySplats(context));
-  }
-  
-  @Override
-  public boolean onScroll(final ScrollEvent evt) {
-    return false;
-  }
+    super(context, mapView, new ArrayList<SplatItem>());
+    mapView_ = mapView;
+
+    offset_ = DrawingHelper.offset(context);
+    radius_ = DrawingHelper.cornerRadius(context);
+    textBrush_ = Brush.createTextBrush(offset_);
+
+    mapView_.setMapListener(new DelayedMapListener(this));
+    
+    SPLAT_MARKER = context.getResources().getDrawable(R.drawable.ic_launcher);
+  } // SplatOverlay
 
   @Override
-  public boolean onZoom(final ZoomEvent evt) {
-    return false;
-  }
+  public void draw(final Canvas canvas, final MapView mapView, final boolean shadow) 
+  {
+    super.draw(canvas, mapView, shadow);
+    
+    if(!loading_) 
+      return;
+    
+    final Rect bounds = new Rect();
+    textBrush_.getTextBounds(LOADING, 0, LOADING.length(), bounds);
+
+    int width = bounds.width() + (offset_ * 2);
+    final Rect screen = canvas.getClipBounds();
+    screen.left = screen.centerX() - (width/2); 
+    screen.top += offset_ * 2;
+    screen.right = screen.left + width;
+    screen.bottom = screen.top + bounds.height() + (offset_ * 2);
+      
+    if(!DrawingHelper.drawRoundRect(canvas, screen, radius_, Brush.Grey))
+      return;
+    canvas.drawText(LOADING, screen.centerX(), screen.centerY() + bounds.bottom, textBrush_);
+  } // drawButtons
+
+  @Override
+  public boolean onScroll(final ScrollEvent event) {
+    refreshSplats();
+    return true;
+  } // onScroll
+    
+  @Override
+  public boolean onZoom(final ZoomEvent event) {
+    if(event.getZoomLevel() < zoomLevel_)
+      items().clear();
+    zoomLevel_ = event.getZoomLevel();
+    refreshSplats();
+    return true;
+  } // onZoom
+  
+  protected void refreshSplats() { 
+    final IGeoPoint centre = mapView_.getMapCenter();
+    final int zoom = mapView_.getZoomLevel();
+    final BoundingBoxE6 bounds = mapView_.getBoundingBox();
+    
+    if(!fetchSplatsInBackground(centre, zoom, bounds))
+      return;
+
+    loading_ = true;
+    redraw();
+  } // refreshPhotos
+
+  protected void redraw() {
+    mapView_.postInvalidate();
+  } // redraw
+  
+  protected boolean fetchSplatsInBackground(final IGeoPoint mapCentre,
+                                            final int zoom,
+                                            final BoundingBoxE6 boundingBox) {
+    GetSplatTask.fetch(this, mapCentre, zoom, boundingBox);
+    return true;
+  } // fetchSplatsInBackground
+  
+  protected void setItems(final List<SplatItem> newSplats)
+  {
+    if(newSplats != null) {
+      items().clear();
+      items().addAll(newSplats);
+    }
+    
+    loading_ = false;
+    redraw();
+  } // setItems
+  
+  ///////////////////////////////////////////////////
+  static private class GetSplatTask extends AsyncTask<Object,Void,JSONArray> 
+  {
+    static void fetch(final SplatOverlay overlay, 
+                      final Object... params)
+    {
+      new GetSplatTask(overlay).execute(params);
+    } // fetch
+    
+    //////////////////////////////////////////////////////
+    private final SplatOverlay overlay_;
+    
+    private  GetSplatTask(final SplatOverlay overlay)
+    {
+      overlay_ = overlay;
+    } // GetPhotosTask
+    
+    protected JSONArray doInBackground(Object... params) 
+    {
+      final IGeoPoint mapCentre = (IGeoPoint)params[0];
+      int zoom = (Integer)params[1];
+      final BoundingBoxE6 boundingBox = (BoundingBoxE6)params[2];
+
+      try {
+        return Website.fetchSplatData();
+      } 
+      catch (final Exception ex) {
+        // never mind, eh?
+      }
+      return null;
+    } // doInBackground
+    
+    @Override
+    protected void onPostExecute(final JSONArray splatData) 
+    {
+      final List<SplatItem> splats = makeSplatList(splatData);
+      overlay_.setItems(splats);
+    } // onPostExecute
+    
+    private List<SplatItem> makeSplatList(final JSONArray splatData) 
+    {
+      if(splatData == null)
+        return null;
+      
+      final List<SplatItem> splats = new ArrayList<SplatItem>();
+      for(int s = 0; s != splatData.length(); ++s) {
+        try {
+          final JSONObject splat = splatData.getJSONObject(s);
+          
+          final GeoPoint position = new GeoPoint(splat.getDouble("lat"),
+                                                 splat.getDouble("lon"));
+          
+          final SplatItem newSplat = new SplatItem(splat.getString("name"),
+                                                   "",
+                                                   position);
+          
+          splats.add(newSplat);
+        } catch(final JSONException e) {
+          // poop
+        }
+      }
+      return splats;
+    } // makeSplatList
+  } // GetPhotosTask
+
 } // class SplatOverlay
