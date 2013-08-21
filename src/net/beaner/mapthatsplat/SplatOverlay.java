@@ -11,6 +11,7 @@ import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -22,8 +23,9 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
-public class SplatOverlay extends ItemizedOverlay<SplatOverlay.SplatItem>
+public class SplatOverlay extends ItemizedIconOverlay<SplatOverlay.SplatItem>
                           implements MapListener
 {
   
@@ -33,30 +35,50 @@ public class SplatOverlay extends ItemizedOverlay<SplatOverlay.SplatItem>
                      final String description, 
                      final GeoPoint position) {
       super(title, description, position);
-      setMarker(SPLAT_MARKER);
     }
   } // class SplatItem
   
-  private MapView mapView_;
-  private int zoomLevel_;
+  private final MapView mapView_;
+  private int zoomLevel_ = 99;
   private boolean loading_;
   private final int offset_;
   private final float radius_;
   private final Paint textBrush_;
-  static private final String LOADING = "Loading ...";
-  static private Drawable SPLAT_MARKER;
+  static private List<SplatItem> splats_ = new ArrayList<SplatItem>();
+  static private final String LOADING = "Loading Splats ...";
+  
+  static public class SplatTapListener implements ItemizedIconOverlay.OnItemGestureListener<SplatItem>
+  {
+    private final Context context_;
+
+    public SplatTapListener(final Context context) {
+      context_ = context; 
+    }
+    
+    @Override
+    public boolean onItemLongPress(int index, SplatItem splat)
+    {
+      return false;
+    }
+
+    @Override
+    public boolean onItemSingleTapUp(int index, SplatItem splat)
+    {
+      Toast.makeText(context_, "SPLAT! " + splat.getTitle(), Toast.LENGTH_LONG).show();
+      return false;
+    }
+  }
 
   public SplatOverlay(final Context context, final MapView mapView) {
-    super(context, mapView, new ArrayList<SplatItem>());
-    mapView_ = mapView;
+    super(context, splats_, new SplatTapListener(context));
 
+    mapView_ = mapView;
+    
     offset_ = DrawingHelper.offset(context);
     radius_ = DrawingHelper.cornerRadius(context);
     textBrush_ = Brush.createTextBrush(offset_);
 
     mapView_.setMapListener(new DelayedMapListener(this));
-    
-    SPLAT_MARKER = context.getResources().getDrawable(R.drawable.ic_launcher);
   } // SplatOverlay
 
   @Override
@@ -90,8 +112,6 @@ public class SplatOverlay extends ItemizedOverlay<SplatOverlay.SplatItem>
     
   @Override
   public boolean onZoom(final ZoomEvent event) {
-    if(event.getZoomLevel() < zoomLevel_)
-      items().clear();
     zoomLevel_ = event.getZoomLevel();
     refreshSplats();
     return true;
@@ -123,8 +143,9 @@ public class SplatOverlay extends ItemizedOverlay<SplatOverlay.SplatItem>
   protected void setItems(final List<SplatItem> newSplats)
   {
     if(newSplats != null) {
-      items().clear();
-      items().addAll(newSplats);
+      splats_.clear();
+      splats_.addAll(newSplats);
+      populate();
     }
     
     loading_ = false;
@@ -195,5 +216,4 @@ public class SplatOverlay extends ItemizedOverlay<SplatOverlay.SplatItem>
       return splats;
     } // makeSplatList
   } // GetPhotosTask
-
 } // class SplatOverlay
