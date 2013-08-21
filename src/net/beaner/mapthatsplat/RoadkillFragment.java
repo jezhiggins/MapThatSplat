@@ -19,6 +19,7 @@ import android.widget.Button;
 public class RoadkillFragment extends Fragment implements OnClickListener {
 	private MapView map_;
 	private MyLocationOverlay location_;
+	private SplatOverlay splats_;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, 
@@ -34,6 +35,9 @@ public class RoadkillFragment extends Fragment implements OnClickListener {
         location_ = new MyLocationOverlay(getActivity(), map_);
         location_.enableMyLocation();
         map_.getOverlays().add(location_);
+        
+        splats_ = new SplatOverlay(getActivity(), map_);
+        map_.getOverlays().add(splats_);
 
         final Button findMe = (Button)rootView.findViewById(R.id.findme_btn);
         findMe.setOnClickListener(this);
