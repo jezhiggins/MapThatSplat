@@ -60,7 +60,7 @@ public class ThereOverlay extends Overlay {
   } // onDrawFinished
 
   @Override
-  public boolean onSingleTapUp(final MotionEvent event, final MapView mapView) {
+  public boolean onSingleTapConfirmed(final MotionEvent event, final MapView mapView) {
     final IGeoPoint p = mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY());
     noOverThere(p);
     return true;
