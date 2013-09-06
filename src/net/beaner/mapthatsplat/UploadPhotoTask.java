@@ -14,13 +14,13 @@ public class UploadPhotoTask extends AsyncTask<Object, Void, Boolean>
 {
 	private final UploadListener frag_;
 	private final String filename_;
-	private final Location location_;
+	private final IGeoPoint location_;
 	private final String animal_;
 	private final ProgressDialog progress_;
         
 	UploadPhotoTask(final UploadListener fragment,
-					final Location location,
-					final String animal,
+					        final IGeoPoint location,
+					        final String animal,
 	                final String photo)
 	{
 		frag_ = fragment;
@@ -41,8 +41,8 @@ public class UploadPhotoTask extends AsyncTask<Object, Void, Boolean>
 	{
 	  try {
 		  return Website.uploadSplat(
-				  location_.getLongitude(),
-				  location_.getLatitude(),
+				  ((double)location_.getLongitudeE6())/1E6,
+				  ((double)location_.getLatitudeE6())/1E6,
 				  filename_,
 				  animal_);
 	  } // try

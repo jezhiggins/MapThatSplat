@@ -1,9 +1,6 @@
 package net.beaner.mapthatsplat;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -12,17 +9,12 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MyLocationOverlay;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -40,13 +32,14 @@ import android.widget.Toast;
 
 public class AddSplatFragment extends Fragment 
 		implements OnClickListener, OnItemSelectedListener, UploadListener {
-	private View first_;
-	private View second_;
-	private View third_;
-	private View upload_;
+	private View chooseLocationView_;
+	private View choosePhotoView_;
+	private View chooseAnimalView_;
+	private View uploadView_;
 	private View currentPage_;
 	private MapView map_;
 	private MyLocationOverlay location_;
+	private ThereOverlay there_;
 	private Button backBtn_;
 	private Button nextBtn_;
 	private Button findMe_;
@@ -54,87 +47,89 @@ public class AddSplatFragment extends Fragment
 	private Spinner spinner_;
 	private int lastSpinnerPosition_;
 	private String photoFile_ = null;
-    private Bitmap photo_ = null;
-    private Uri photoUri_;
-    private ImageView photoView_;
+  private Bitmap photo_ = null;
+  private ImageView photoView_;
 	
 	private final static int TAKE_PHOTO_ID = 1;
 	private final static int CHOOSE_PHOTO_ID = 2;
      
-    @Override
-    public View onCreateView(LayoutInflater inflater, 
+  @Override
+  public View onCreateView(LayoutInflater inflater, 
     						 ViewGroup container,
     						 Bundle savedInstanceState) {
-    	// this method is called once, when the Fragment is first created
-        View rootView = inflater.inflate(R.layout.add_splat_layout, container, false);
+  	// this method is called once, when the Fragment is first created
+    View rootView = inflater.inflate(R.layout.add_splat_layout, container, false);
         
-        first_ = rootView.findViewById(R.id.first);
-        second_ = rootView.findViewById(R.id.second);
-        third_ = rootView.findViewById(R.id.third);
-        upload_ = rootView.findViewById(R.id.upload);
-        
-        backBtn_ = setupButton(rootView, R.id.back);
-        nextBtn_ = setupButton(rootView, R.id.next);
-        
-    	spinner_ = (Spinner)rootView.findViewById(R.id.animal_choice);
-    	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
-    	adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-    	spinner_.setAdapter(adapter);
-    	spinner_.setOnItemSelectedListener(this);
-    	lastSpinnerPosition_ = 0;
+    chooseLocationView_ = rootView.findViewById(R.id.location);
+    choosePhotoView_ = rootView.findViewById(R.id.choosephoto);
+    chooseAnimalView_ = rootView.findViewById(R.id.chooseanimal);
+    uploadView_ = rootView.findViewById(R.id.upload);
+      
+    backBtn_ = setupButton(rootView, R.id.back);
+    nextBtn_ = setupButton(rootView, R.id.next);
+      
+  	spinner_ = (Spinner)rootView.findViewById(R.id.animal_choice);
+  	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.animal_array, android.R.layout.simple_spinner_dropdown_item);
+  	adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+  	spinner_.setAdapter(adapter);
+  	spinner_.setOnItemSelectedListener(this);
+  	lastSpinnerPosition_ = 0;
 
-    	findMe_ = setupButton(rootView, R.id.findme_btn);
-    	
-    	setupButton(rootView, R.id.takephoto);
-    	setupButton(rootView, R.id.usephoto);
-    	
-    	customAnimal_ = (EditText)rootView.findViewById(R.id.customanimal);
-    	photoView_ = (ImageView)rootView.findViewById(R.id.splatograph);
-    	  
-        showPage(first_);
+  	findMe_ = setupButton(rootView, R.id.findme_btn);
+  	
+  	setupButton(rootView, R.id.takephoto);
+  	setupButton(rootView, R.id.usephoto);
+  	
+  	customAnimal_ = (EditText)rootView.findViewById(R.id.customanimal);
+  	photoView_ = (ImageView)rootView.findViewById(R.id.splatograph);
+  	  
+  	showPage(choosePhotoView_);
         
-        setupMap(rootView);
+  	setupMap(rootView);
   
-        return rootView;
-    }    
+    return rootView;
+  }    
     
-    private Button setupButton(View rootView, int buttonId) {
-    	// this wires up out buttons to our clicklistener
-        final Button btn = (Button)rootView.findViewById(buttonId);
-        btn.setOnClickListener(this);
-        return btn;
-    }
+  private Button setupButton(View rootView, int buttonId) {
+  	// this wires up out buttons to our clicklistener
+    final Button btn = (Button)rootView.findViewById(buttonId);
+    btn.setOnClickListener(this);
+    return btn;
+  }
     
-    private void setupMap(View rootView) {
-    	// set up the map controls, and add the "where am I" overlay
-        map_ = (MapView)rootView.findViewById(R.id.mapview);
-        map_.setTileSource(TileSourceFactory.MAPNIK);
-        map_.setBuiltInZoomControls(true);
-        map_.setMultiTouchControls(true);  
+  private void setupMap(View rootView) {
+  	// set up the map controls, and add the "where am I" overlay
+    map_ = (MapView)rootView.findViewById(R.id.mapview);
+    map_.setTileSource(TileSourceFactory.MAPNIK);
+    map_.setBuiltInZoomControls(true);
+    map_.setMultiTouchControls(true);  
         
-        location_ = new MyLocationOverlay(getActivity(), map_);
-        location_.enableMyLocation();
-        map_.getOverlays().add(location_);
-    }
+    location_ = new MyLocationOverlay(getActivity(), map_);
+    location_.enableMyLocation();
+    map_.getOverlays().add(location_);
+
+    there_ = new ThereOverlay(getActivity(), map_);
+    map_.getOverlays().add(there_);
+  } // setupMap
     
-    @Override
+  @Override
 	public void onPause() {
-    	// called when the fragment is hidden for any reason
-    	// eg we have moved to another fragment or another app
+    // called when the fragment is hidden for any reason
+  	// eg we have moved to another fragment or another app
 		super.onPause();
 		
-  		final SharedPreferences.Editor edit = prefs().edit();
-		
-	    final IGeoPoint centre = map_.getMapCenter();
-	    int lon = centre.getLongitudeE6();
-	    int lat = centre.getLatitudeE6();
-	    edit.putInt("lon", lon);
-	    edit.putInt("lat", lat);
-	    edit.putInt("zoom", map_.getZoomLevel());
+		final SharedPreferences.Editor edit = prefs().edit();
+	
+    final IGeoPoint centre = map_.getMapCenter();
+    int lon = centre.getLongitudeE6();
+    int lat = centre.getLatitudeE6();
+    edit.putInt("lon", lon);
+    edit.putInt("lat", lat);
+    edit.putInt("zoom", map_.getZoomLevel());
+    
+    edit.commit();
 	    
-	    edit.commit();
-	    
-	    location_.disableMyLocation();
+    location_.disableMyLocation();
 	}
 
 	@Override
@@ -155,13 +150,13 @@ public class AddSplatFragment extends Fragment
 		location_.enableMyLocation();
 	}
  
-    private SharedPreferences prefs() {
-    	return getActivity().getSharedPreferences("roadkillmap", Context.MODE_PRIVATE);
-    }
+  private SharedPreferences prefs() {
+  	return getActivity().getSharedPreferences("roadkillmap", Context.MODE_PRIVATE);
+  }
 
 	@Override
 	public void onClick(View buttonThatWasClicked) {
-	    // when someone clicks one of buttons we've set up 
+    // when someone clicks one of buttons we've set up 
 		// the listener on this method is called
 		switch(buttonThatWasClicked.getId()) {
 		case R.id.back:
@@ -179,34 +174,34 @@ public class AddSplatFragment extends Fragment
 		case R.id.usephoto:
 			choosePhoto();
 			break;
-		}
-	}
+		} // switch
+	} // onClick
 	
 	private void goBack() {
-		if(currentPage_ == second_) {
-			showPage(first_);
+		if(currentPage_ == chooseLocationView_) {
+			showPage(choosePhotoView_);
 		}
-		else if (currentPage_ == third_) {
-			showPage(second_);
+		else if (currentPage_ == chooseAnimalView_) {
+			showPage(chooseLocationView_);
 		}
-	}
+	} // goBack
 	
 	private void goNext() {
-		if(currentPage_ == first_) {
-		    showPage(second_);
+		if(currentPage_ == choosePhotoView_) {
+		    showPage(chooseLocationView_);
 		}
-		else if(currentPage_ == second_) {
-			showPage(third_);
+		else if(currentPage_ == chooseLocationView_) {
+			showPage(chooseAnimalView_);
 		}
 		else{
-			showPage(upload_);
+			showPage(uploadView_);
 			uploadToWebsite();
 		}
-	}
+	} // goNext
 	
 	private void findme() {
 		location_.enableFollowLocation();
-	}
+	} // findme
 	
 	private void takePhoto() {
 		// ask Android to take a photo and then tell us about it
@@ -217,130 +212,114 @@ public class AddSplatFragment extends Fragment
 			// Bums!
 			e.printStackTrace();
 		}
-	}
+	} // takePhoto
 		
 	private void choosePhoto() {
-	    Intent choose = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-	    startActivityForResult(choose, CHOOSE_PHOTO_ID);
-	}
+    Intent choose = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+    startActivityForResult(choose, CHOOSE_PHOTO_ID);
+	} // choosePhoto
 
 	@Override
 	public void onActivityResult(int requestCode,
-			                     int resultCode,
-			                     Intent data) {
+	                             int resultCode,
+	                             Intent data) {
 		if (resultCode != Activity.RESULT_OK)
-	      return;
+      return;
 
-		try
-	    {
-	      photoFile_ = Photos.getImageFilePath(getActivity(), data);
-	      if(photo_ != null)
-	        photo_.recycle();
-	      photo_ = Bitmaps.loadFile(photoFile_);
-  		  splatPhoto();
-	    }
-		catch(Exception e)
-		{
+		try {
+      photoFile_ = Photos.getImageFilePath(getActivity(), data);
+      if(photo_ != null)
+        photo_.recycle();
+      photo_ = Bitmaps.loadFile(photoFile_);
+		  splatPhoto();
+    } catch(Exception e) {
 			Toast.makeText(getActivity(), "There was a problem grabbing the photo : " + e.getMessage(), Toast.LENGTH_LONG).show();
 		  if(requestCode == TAKE_PHOTO_ID)
 		    choosePhoto();
 		}
-	}
+	} // onActivityResult
 	
 	private void splatPhoto() {
 		photoView_.setImageBitmap(photo_);
-	}
+	} // splatPhoto
 	
 	private void showPage(View page) {
 		// this is our method that we use to show the page 
 		// of our layout that we want to see
-		first_.setVisibility(View.INVISIBLE);
-		second_.setVisibility(View.INVISIBLE);
-		third_.setVisibility(View.INVISIBLE);
-		upload_.setVisibility(View.INVISIBLE);
+	  chooseLocationView_.setVisibility(View.INVISIBLE);
+		choosePhotoView_.setVisibility(View.INVISIBLE);
+		chooseAnimalView_.setVisibility(View.INVISIBLE);
+		uploadView_.setVisibility(View.INVISIBLE);
 		
 		currentPage_ = page;
 
 		page.setVisibility(View.VISIBLE);
 		
-		if((page == first_) || (page == upload_)) 
-		{
+		if((page == choosePhotoView_) || (page == uploadView_)) {
 			backBtn_.setVisibility(View.INVISIBLE);
-		}
-		else
-		{
+		} else {
 			backBtn_.setVisibility(View.VISIBLE);
 		}
 		
-		if(page == first_)
-		{
+		if(page == chooseLocationView_) {
 			findMe_.setVisibility(View.VISIBLE);
-		}
-		else
-		{
+		} else {
 			findMe_.setVisibility(View.INVISIBLE);
 		}
 
-		if(page == upload_) 
-		{
+		if(page == uploadView_) {
 			nextBtn_.setVisibility(View.INVISIBLE);
-		}
-		else 
-		{
+		} else {
 			nextBtn_.setVisibility(View.VISIBLE);	
 		}
 		
-		if(page == third_) 
-		{
+		if(page == chooseAnimalView_) {
 			nextBtn_.setText("Upload!");
 			nextBtn_.setEnabled(lastSpinnerPosition_ != 0);
-		}
-		else 
-		{
+		} else {
 			nextBtn_.setText("Next");
 			nextBtn_.setEnabled(true);
 			customAnimal_.setEnabled(false);
 		}
-	}
+	} // showPage
 	
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		// called by the spinner when the chosen animal changes
-    	lastSpinnerPosition_ = position;
-    	if(currentPage_ == third_) {
-    		nextBtn_.setEnabled(lastSpinnerPosition_ != 0);    		
-    		customAnimal_.setEnabled(lastSpinnerPosition_ == spinner_.getCount()-1);
-    	}
-	}
+  	lastSpinnerPosition_ = position;
+  	if(currentPage_ == chooseAnimalView_) {
+  		nextBtn_.setEnabled(lastSpinnerPosition_ != 0);    		
+  		customAnimal_.setEnabled(lastSpinnerPosition_ == spinner_.getCount()-1);
+  	}
+	} // onItemSelected
 
 	private String getAnimal() {
 		if(lastSpinnerPosition_ == spinner_.getCount()-1)
 			return customAnimal_.getText().toString();
 		return (String)spinner_.getAdapter().getItem(lastSpinnerPosition_);
-	}
+	} // getAnimal
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 		// we're not interested in this
-	}
+	} // onNothingSelected
 	
 	private void uploadToWebsite() {
-		Location loc = location_.getLastFix();
+		final IGeoPoint loc = there_.there();
 		UploadPhotoTask uploader = new UploadPhotoTask(this,
-													   loc,
-													   getAnimal(),
-													   photoFile_);
+                      													   loc,
+                      													   getAnimal(),
+                      													   photoFile_);
 		uploader.execute();
-	}	
+	} // uploadToWebsite	
 	
 	public void uploadComplete() {
 		Toast.makeText(getActivity(), "Thanks dude", Toast.LENGTH_LONG).show();
-	}
+	} // uploadComplete
 	
 	public void uploadFailed() {
 		Toast.makeText(getActivity(), "There was a problem.  Bum!", Toast.LENGTH_LONG).show();
-		
-	}
-}
+	} // uploadFailed
+} // AddSplatFragment
 		
 

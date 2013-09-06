@@ -9,7 +9,7 @@
 	    android:layout_height="0dip"
 	    android:layout_weight="0.5">
      <LinearLayout 
-		android:id="@+id/first"
+		android:id="@+id/location"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:orientation="vertical" >
@@ -17,7 +17,8 @@
 	        android:text="Where was the splat?"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:padding="16dp"/>
+	        android:padding="16dp"
+	        style="?android:attr/textAppearanceLarge"/>
 	      <org.osmdroid.views.MapView
 	         android:id="@+id/mapview"
 	         android:layout_width="match_parent"
@@ -27,7 +28,7 @@
 	         android:enabled="true" />
 	  </LinearLayout>
 	  <LinearLayout
-	      android:id="@+id/second"  
+	      android:id="@+id/choosephoto"  
 	      android:layout_width="match_parent"
 	      android:layout_height="match_parent"
 	      android:orientation="vertical"
@@ -60,7 +61,7 @@
 	        android:layout_weight="1.0"/>
 	  </LinearLayout>
 	  <LinearLayout 
-	      android:id="@+id/third"  
+	      android:id="@+id/chooseanimal"  
 	      android:layout_width="match_parent"
 	      android:layout_height="match_parent"
 	      android:orientation="vertical" >
