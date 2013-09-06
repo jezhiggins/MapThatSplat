@@ -1,14 +1,10 @@
 package net.beaner.mapthatsplat;
 
-import java.io.File;
 
 import org.osmdroid.api.IGeoPoint;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.location.Location;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 
 public class UploadPhotoTask extends AsyncTask<Object, Void, Boolean>
 {

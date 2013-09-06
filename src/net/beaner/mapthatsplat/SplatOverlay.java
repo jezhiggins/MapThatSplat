@@ -43,7 +43,6 @@ public class SplatOverlay extends ItemizedIconOverlay<SplatOverlay.SplatItem>
   } // class SplatItem
   
   private final MapView mapView_;
-  private int zoomLevel_ = 99;
   private boolean loading_;
   private final int offset_;
   private final float radius_;
@@ -120,7 +119,6 @@ public class SplatOverlay extends ItemizedIconOverlay<SplatOverlay.SplatItem>
     
   @Override
   public boolean onZoom(final ZoomEvent event) {
-    zoomLevel_ = event.getZoomLevel();
     refreshSplats();
     return true;
   } // onZoom
